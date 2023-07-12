@@ -1,0 +1,31 @@
+
+    .error{
+        display:block;
+        color:red;
+        width:400px;
+        word-wrap: break-word;
+    }
+
+    .flabel{
+        margin-top: 20px;
+    }
+
+    .controls{
+        width:200px;
+    }
+
+    .form-control{
+        width:500px;
+    }
+
+    #showpassword{
+        float:right;
+        margin-top: -25px;
+        right:40px;
+        position: relative;
+        z-index: 2;
+    }
+    #pwderror {
+        display: inline-block;
+        width: 500px;
+    }
