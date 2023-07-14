@@ -23,14 +23,20 @@
         <#else>
         <span class="error text-center">Verification code has expired</span>
     </#if>
-    <form id="choose">
-        <div class="row">
-            <button class="flabel btn btn-info" type="submit" formaction="/register">Sign Up</button>
-        </div>
-        <div class="row">
-            <button class="flabel  btn btn-info" type="submit" formaction="/resend">Resend Email</button>
-        </div>
-    </form>
+    <#if message == 3 >
+        <form method="post">
+            <input type="hidden" name="token" value="${token}">
+            <div class="row">
+                <button class="flabel btn btn-info" type="submit" formaction="/resend">Resend Email</button>
+            </div>
+        </form>
+    <#else>
+        <form>
+            <div class="row">
+                <button class="flabel btn btn-info" type="submit" formaction="/register">Sign Up</button>
+            </div>
+        </form>
+    </#if>
     </div>
 </#if>
 </body>

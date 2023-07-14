@@ -9,7 +9,7 @@ import java.util.Date;
 @Entity
 @Table(name = "TOKENS", schema = "Application")
 public class VerificationToken {
-        private static final int EXPIRATION = 60 * 24;
+        private static final int EXPIRATION = 60*24;
         
         @Id
         @Column(name = "id", nullable = false)
@@ -44,6 +44,14 @@ public class VerificationToken {
     }
     
     public User getUser() {return user;}
+    
+    public String getToken() {
+        return token;
+    }
+    
+    public void setToken(String token) {
+        this.token = token;
+    }
     
     public Date getExpiredDate() {return expiredDate;}
     

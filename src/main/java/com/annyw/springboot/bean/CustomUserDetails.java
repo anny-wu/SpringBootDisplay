@@ -2,6 +2,7 @@ package com.annyw.springboot.bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -15,17 +16,38 @@ public class CustomUserDetails implements UserDetails {
     }
     
     @Override
+    @Transactional
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<Role> roles = user.getRoles();
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        Collection<Role> roles = user.getRoles();
+        Set<String> privileges = new HashSet<>();
         for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            for(Privilege item : role.getPrivileges()){
+                privileges.add(item.getName());
+            }
+        }
+        
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String privilege : privileges) {
+            authorities.add(new SimpleGrantedAuthority(privilege));
         }
         return authorities;
     }
     
+    public Collection<String> getRoles(){
+        Collection<String> result = new HashSet<>();
+        for(Role role : user.getRoles()){
+            result.add(role.getName());
+        }
+        return result;
+    }
+    
     public String getEmail() {
         return user.getEmail();
+    }
+    
+    @Override
+    public String getUsername() {
+        return user.getUsername();
     }
     @Override
     public String getPassword() {
@@ -33,23 +55,18 @@ public class CustomUserDetails implements UserDetails {
     }
     
     @Override
-    public String getUsername() {
-        return user.getUsername();
-    }
-    
-    @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return user.isAccountNonExpired();
     }
     
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.isAccountNonLocked();
     }
     
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return user.isCredentialsNonExpired();
     }
     
     @Override

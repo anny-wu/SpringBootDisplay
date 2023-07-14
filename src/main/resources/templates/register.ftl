@@ -14,7 +14,7 @@
 <body>
 <div class="cover-container d-flex h-100 flex-column align-items-center justify-content-center">
     <h1>Register</h1>
-        <form method="post">
+        <form method="post" id="form">
             <div>
                 <label class="flabel"><strong>Email</strong></label>
                 <@spring.bind "user.email"/>
@@ -71,7 +71,7 @@
                     </#if>
                 </span>
             </div>
-
+            <!--TODO: Show Password Strength-->
             <div>
                 <label class="flabel"><strong>Confirm Password</strong></label>
                 <input type="password" class="form-control" name="confirm"
@@ -88,10 +88,11 @@
                        placeholder="admin code" id="privilege">
             </div>
         <div class="row d-flex justify-content-center">
-            <button class="controls flabel btn btn-info" type="submit" onclick="return validateSame()">Sign up</button>
+            <button class="controls flabel btn btn-info" type="submit" id="signup" formaction="/register">Sign
+                up</button>
         </div>
         <div class="row d-flex justify-content-center">
-            <button class="controls flabel btn btn-info" type="submit" formaction="/home">Back</button>
+            <button class="controls flabel btn btn-info" type="submit" formaction="/">Back</button>
         </div>
         </form>
 </div>
@@ -109,18 +110,20 @@
             $("input[name='password']").attr("type","text");
         }
     });
+    $("#signup").on("click", function(){
+        validateSame();
+    });
 
     function validateSame(){
         //Check if the passwords match each other
         if ($("#password").val() == $("#confirm").val()) {
             console.log("same");
-            $("#confirm").focus();
-            window.location.replace("/register");
+            $("#form").attr("action", "/submit");
+            $("#form").submit();
             return true;
         } else {
             console.log("Not same");
             $("#confirmerror").text("Passwords do not match");
-            $("#confirm").focus();
             return false;
         }
     }

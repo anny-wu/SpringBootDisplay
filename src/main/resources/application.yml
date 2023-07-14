@@ -7,6 +7,7 @@ spring:
     cache: false
     template-loader-path: classpath:/templates/
     request-context-attribute: request
+    expose-request-attributes: true
   mvc:
     favicon:
       enabled:true
@@ -23,8 +24,8 @@ spring:
   mail:
     host: smtp.qq.com
     port: 465
-    username: xxxxxxxx
-    password: xxxxxxxx
+    username: xxxxxx
+    password: xxxxxx
     protocol: smtps
     properties:
       mail:
@@ -33,5 +34,6 @@ spring:
           debug: true
           starttls:
             enable: true
+
 
 

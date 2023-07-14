@@ -2,6 +2,8 @@ package com.annyw.springboot.bean;
 
 import jakarta.persistence.*;
 
+import java.util.Collection;
+
 @Entity
 @Table(name = "ROLE", schema = "Application")
 public class Role {
@@ -9,12 +11,21 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
-    private int id;
+    private Long id;
     @Column(name = "name", nullable = false)
     private String name;
     
-    public Role() {
+    @ManyToMany(mappedBy = "roles")
+    private Collection<User> users;
     
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "ROLE_PRIVILEGE",
+        joinColumns = @JoinColumn(name = "roleID"),
+        inverseJoinColumns = @JoinColumn(name = "privilegeID"))
+    private Collection<Privilege> privileges;
+    
+    public Role() {
     }
     
     public Role(String name) {
@@ -22,11 +33,11 @@ public class Role {
     }
     
    
-    public int getId() {
+    public Long getId() {
         return id;
     }
     
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
     
@@ -37,4 +48,13 @@ public class Role {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public Collection<? extends Privilege> getPrivileges() {
+        return privileges;
+    }
+    public void setPrivileges(Collection<Privilege> privileges) {
+        this.privileges = privileges;
+    }
+    
+  
 }

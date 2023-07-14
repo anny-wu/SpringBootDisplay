@@ -5,8 +5,7 @@ import com.annyw.springboot.validator.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 @Entity
 @Table(name = "USER", schema = "Application")
@@ -46,15 +45,19 @@ public class User {
         joinColumns = @JoinColumn(name = "userID"),
         inverseJoinColumns = @JoinColumn(name = "roleID")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Collection<Role> roles;
     
     @Column(name = "enabled", nullable = false)
     private boolean enabled = false;
     
-    public void addRole(Role role) {
-        this.roles.add(role);
-    }
+    @Column(name = "account_nonexpired", nullable = false)
+    private boolean accountNonExpired = true;
     
+    @Column(name = "account_nonlocked", nullable = false)
+    private boolean accountNonLocked = true;
+    
+    @Column(name = "credentials_nonexpired", nullable = false)
+    private boolean credentialsNonExpired = true;
     
     public Long getId() {
         return id;
@@ -96,11 +99,11 @@ public class User {
         this.privilege = privilege;
     }
     
-    public Set<Role> getRoles() {
+    public Collection<Role> getRoles() {
         return roles;
     }
     
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
     
@@ -110,5 +113,29 @@ public class User {
     
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
+    
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+    
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+    
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+    
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+    
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
     }
 }

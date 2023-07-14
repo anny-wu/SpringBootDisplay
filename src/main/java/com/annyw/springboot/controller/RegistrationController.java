@@ -3,6 +3,7 @@ package com.annyw.springboot.controller;
 import com.annyw.springboot.bean.User;
 import com.annyw.springboot.bean.VerificationToken;
 import com.annyw.springboot.event.OnRegistrationCompleteEvent;
+import com.annyw.springboot.event.OnResendTokenEvent;
 import com.annyw.springboot.service.UserService;
 import com.annyw.springboot.validator.ValidationSequence;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,14 +16,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Calendar;
-import java.util.Locale;
-import java.util.Map;
 
 @Controller
 public class RegistrationController{
@@ -30,16 +26,6 @@ public class RegistrationController{
     UserService userService;
     @Autowired
     ApplicationEventPublisher eventPublisher;
-    @GetMapping("/")
-    public String index() {
-        return "redirect:/login";
-    }
-    
-    @GetMapping("/home")
-    public String loginGet(){return "login";}
-    
-    @PostMapping("/home")
-    public String loginPost(){return "login";}
     
     @GetMapping("/emailErrors")
     public String emailErrors(){return "badEmail";}
@@ -50,8 +36,17 @@ public class RegistrationController{
         return "register";
     }
     
+    
+    @PostMapping("/startRegister")
+    public String registerPost(Model model) {
+        model.addAttribute("user", new User());
+        return "register";
+    }
+    
+    
+    
     @PostMapping("/register")
-    public String registerPost(@Validated(ValidationSequence.class) User user, BindingResult bindingResult,
+    public String submitForm(@Validated(ValidationSequence.class) User user, BindingResult bindingResult,
         Model model, HttpServletRequest request,  RedirectAttributes redirectAttributes) {
         try{
             if (!bindingResult.hasErrors()) {
@@ -63,7 +58,6 @@ public class RegistrationController{
                 return "redirect:/home";
             }
         } catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
             model.addAttribute("error",true);
             redirectAttributes.addFlashAttribute("message", 1);
@@ -74,9 +68,7 @@ public class RegistrationController{
     }
     
     @GetMapping("/registrationConfirm")
-    public String confirmRegistration
-        (WebRequest request, Model model, @RequestParam("token") String token, RedirectAttributes redirectAttributes) {
-        System.out.println("Enter method");
+    public String confirmRegistration(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
         VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
             redirectAttributes.addFlashAttribute("message", 2);
@@ -85,17 +77,34 @@ public class RegistrationController{
         
         User user = verificationToken.getUser();
         Calendar cal = Calendar.getInstance();
-        System.out.println("Current time: " + cal.getTime().getTime());
-        System.out.println("Expired time: " + verificationToken.getExpiredDate().getTime());
         if ((verificationToken.getExpiredDate().getTime() - cal.getTime().getTime()) <= 0) {
             redirectAttributes.addFlashAttribute("message", 3);
+            redirectAttributes.addFlashAttribute("token", token);
             return "redirect:/emailErrors";
         }
         
         user.setEnabled(true);
         userService.saveRegisteredUser(user);
-        System.out.println("Saved user: " + user);
         return "redirect:/home";
+    }
+    
+    @PostMapping("/resend")
+    public String resendToken(Model model, HttpServletRequest request,
+        RedirectAttributes redirectAttributes){
+        try {
+            String existingToken = request.getParameter("token");
+            System.out.println(existingToken);
+            User user = userService.generateNewVerificationToken(existingToken);
+            String appUrl = request.getContextPath();
+            eventPublisher.publishEvent(new OnResendTokenEvent(user, request.getLocale(), appUrl));
+            return "redirect:/home";
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+            model.addAttribute("error",true);
+            redirectAttributes.addFlashAttribute("message", 1);
+            return "redirect:/emailErrors";
+        }
     }
     
 }

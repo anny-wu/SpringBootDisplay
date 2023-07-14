@@ -7,6 +7,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -14,10 +17,18 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import javax.sql.DataSource;
 
@@ -31,64 +42,113 @@ public class WebSecurityConfiguration{
     
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    AuthenticationSuccessHandler authenticationSuccessHandler;
     
-    public static final String[] ENDPOINTS_WHITELIST = {
-        "/static/**",
-        "/",
-        "/home",
-        "/register",
-        "/registrationConfirm",
-        "/emailErrors"
-    };
-    public static final String LOGIN_URL = "/login";
-    public static final String LOGOUT_URL = "/logout";
-    public static final String LOGIN_FAIL_URL = LOGIN_URL + "?error";
-    public static final String DEFAULT_SUCCESS_URL = "/test.html";
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    /*
+   @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
     @Bean
     public DaoAuthenticationProvider getDaoAuthenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        provider.setPasswordEncoder(encoder());
         return provider;
     }
-    */
+    
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+            .authenticationProvider(getDaoAuthenticationProvider())
+            .build();
+    }
+    
+    public static final String[] ENDPOINTS_WHITELIST = {
+        "/static/**",
+        "/",
+        "/home**",
+        "/submitForm",
+        "/startRegister",
+        "/register",
+        "/registrationConfirm",
+        "/resend",
+        "/emailErrors"
+    };
+    public static final String LOGIN_URL = "/home";
+    public static final String LOGOUT_URL = "/logout";
+    public static final String LOGIN_FAIL_URL = LOGIN_URL + "?error=true";
+    public static final String DEFAULT_SUCCESS_URL = "/home";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    
+    
+    
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        String hierarchy = "ROLE_ADMIN > ROLE_USER";
+        roleHierarchy.setHierarchy(hierarchy);
+        return roleHierarchy;
+    }
+    
+    @Bean
+    public DefaultWebSecurityExpressionHandler customExpressionHandler() {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy());
+        expressionHandler.setDefaultRolePrefix("");
+        return expressionHandler;
+    }
+ 
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
             .csrf(csrf->csrf.disable())
-            .httpBasic(Customizer.withDefaults())
             .authorizeHttpRequests(authorize -> authorize
-                .dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
-                .requestMatchers("/static/**","/about").permitAll()
-                .requestMatchers(ENDPOINTS_WHITELIST).permitAll());
-                    /*.requestMatchers("/user/**")
-                    .hasAuthority("USER")
-                    .requestMatchers("/admin/**")
-                    .hasAuthority("ADMIN")
-                    .anyRequest().authenticated())
-                .formLogin(form -> form
-                    .loginPage(LOGIN_URL)
-                    .loginProcessingUrl(LOGIN_URL)
-                    .failureUrl(LOGIN_FAIL_URL)
-                    .usernameParameter(USERNAME)
-                    .passwordParameter(PASSWORD)
-                    .defaultSuccessUrl(DEFAULT_SUCCESS_URL))
-                .logout(logout -> logout
-                    .logoutUrl(LOGOUT_URL)
-                    .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID")
-                    .logoutSuccessUrl(LOGIN_URL + "?logout"))
-                .sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                    .invalidSessionUrl("/invalidSession")
-                    .maximumSessions(1)
-                    .maxSessionsPreventsLogin(true))
-                ;*/
+                .requestMatchers(ENDPOINTS_WHITELIST).permitAll()
+                .anyRequest().authenticated())
+            .formLogin(form->form
+                .loginPage(LOGIN_URL)
+                .loginProcessingUrl(LOGIN_URL)
+                .failureUrl(LOGIN_FAIL_URL)
+                .usernameParameter(USERNAME)
+                .passwordParameter(PASSWORD)
+                .defaultSuccessUrl(DEFAULT_SUCCESS_URL))
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .invalidSessionUrl("/")
+                .maximumSessions(1));
         return http.build();
     }
-   
 }
+/*
+        .httpBasic(Customizer.withDefaults())
+            .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(ENDPOINTS_WHITELIST).permitAll()
+            .anyRequest().authenticated())
+            .formLogin(form -> form
+            .loginPage(LOGIN_URL)
+            .loginProcessingUrl(LOGIN_URL)
+            .failureUrl(LOGIN_FAIL_URL)
+            .usernameParameter(USERNAME)
+            .passwordParameter(PASSWORD)
+            .defaultSuccessUrl(DEFAULT_SUCCESS_URL));
+        .logout(logout -> logout
+                .logoutUrl(LOGOUT_URL)
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .clearAuthentication(true)
+                .logoutSuccessUrl(LOGIN_URL + "?logout"))
+           
+                
+        
+        .requestMatchers("/user/**")
+        .hasAuthority("USER")
+        .requestMatchers("/admin/**")
+        .hasAuthority("ADMIN")*/
+        
+        
+ 
 

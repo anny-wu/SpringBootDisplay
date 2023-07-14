@@ -2,6 +2,8 @@ package com.annyw.springboot.listener;
 
 import com.annyw.springboot.bean.User;
 import com.annyw.springboot.event.OnRegistrationCompleteEvent;
+import com.annyw.springboot.event.OnResendTokenEvent;
+import com.annyw.springboot.repo.TokenRepository;
 import com.annyw.springboot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -9,11 +11,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
-public class RegistrationListener implements
-    ApplicationListener<OnRegistrationCompleteEvent> {
+public class ResendListener implements
+    ApplicationListener<OnResendTokenEvent> {
     
     @Autowired
     private UserService service;
@@ -21,18 +21,19 @@ public class RegistrationListener implements
     @Autowired
     private JavaMailSender mailSender;
     
+    @Autowired
+    private TokenRepository tokenRepository;
+    
     @Override
-    public void onApplicationEvent(OnRegistrationCompleteEvent event) {
-        this.confirmRegistration(event);
+    public void onApplicationEvent(OnResendTokenEvent event) {
+        this. resendToken(event);
     }
     
-    private void confirmRegistration(OnRegistrationCompleteEvent event) {
+    private void resendToken(OnResendTokenEvent event) {
         User user = event.getUser();
-        String token = UUID.randomUUID().toString();
-        service.createVerificationToken(user, token);
-        
+        String token = tokenRepository.findByUser(user).getToken();
         String recipientAddress = user.getEmail();
-        String subject = "Registration Confirmation";
+        String subject = "Resend Registration Token";
         String confirmationUrl = event.getAppUrl() + "/registrationConfirm?token=" + token;
         
         SimpleMailMessage email = new SimpleMailMessage();
