@@ -32,7 +32,7 @@
         <#if error??>
             <span class="error text-center">${errorMessage}</span>
         </#if>
-        <form method="post">
+        <form method="post" id="#accountForm" >
             <div>
                 <label class="flabel"><strong>Username</strong></label>
                 <input type="text" class="form-control" name="username"

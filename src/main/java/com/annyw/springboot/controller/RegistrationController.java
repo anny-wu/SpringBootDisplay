@@ -36,14 +36,11 @@ public class RegistrationController{
         return "register";
     }
     
-    
     @PostMapping("/startRegister")
     public String registerPost(Model model) {
         model.addAttribute("user", new User());
         return "register";
     }
-    
-    
     
     @PostMapping("/register")
     public String submitForm(@Validated(ValidationSequence.class) User user, BindingResult bindingResult,
@@ -52,6 +49,7 @@ public class RegistrationController{
             if (!bindingResult.hasErrors()) {
                 model.addAttribute("noErrors", true);
                 User registered = userService.register(user);
+                System.out.println(registered);
                 String appUrl = request.getContextPath();
                 eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered,
                     request.getLocale(), appUrl));
@@ -61,6 +59,7 @@ public class RegistrationController{
             e.printStackTrace();
             model.addAttribute("error",true);
             redirectAttributes.addFlashAttribute("message", 1);
+            userService.deleteUser(user);
             return "redirect:/emailErrors";
         }
         model.addAttribute("user", user);

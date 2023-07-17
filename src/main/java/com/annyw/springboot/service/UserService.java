@@ -1,8 +1,7 @@
 package com.annyw.springboot.service;
 
-import com.annyw.springboot.bean.Role;
-import com.annyw.springboot.bean.User;
-import com.annyw.springboot.bean.VerificationToken;
+import com.annyw.springboot.bean.*;
+import com.annyw.springboot.repo.AttemptsRepository;
 import com.annyw.springboot.repo.RoleRepository;
 import com.annyw.springboot.repo.TokenRepository;
 import com.annyw.springboot.repo.UserRepository;
@@ -11,10 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -26,32 +22,50 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
+    private AttemptsRepository attemptsRepository;
+    @Autowired
     PasswordEncoder passwordEncoder;
   
     
     public User register(User user){
         Collection<Role> roles = new ArrayList<>();
         
-        if(user.getPrivilege() == "admin"){
+        if(user.getPrivilege().equals("admin")){
             roles.add(roleRepository.findByName("ROLE_ADMIN"));
         }
         else{
-            Role role = new Role("USER");
             roles.add(roleRepository.findByName("ROLE_USER"));
         }
-        user.setUsername(user.getUsername().substring(0, 1).toUpperCase() + user.getUsername().substring(1).toLowerCase());
+        String username =
+            user.getUsername().substring(0, 1).toUpperCase() + user.getUsername().substring(1).toLowerCase();
+        user.setUsername(username);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(roles);
-        return userRepository.save(user);
+        userRepository.save(user);
+        
+        Attempts attempt = new Attempts(username);
+        attemptsRepository.save(attempt);
+        return user;
+    }
+    
+    public User getUserByUsername(String username){
+        username = username.substring(0, 1).toUpperCase() + username.substring(1).toLowerCase();
+        return userRepository.findByUsername(username);
     }
     public boolean usernameExists(String username) {
         username = username.substring(0, 1).toUpperCase() + username.substring(1).toLowerCase();
         return userRepository.findByUsername(username) != null;
     }
     
-    public User getUser(String verificationToken) {
-        User user = tokenRepository.findByToken(verificationToken).getUser();
-        return user;
+    public List<Privilege> getUserPrivilege(String role) {
+       System.out.println(roleRepository.findByName(role));
+       return (List<Privilege>) roleRepository.findByName(role).getPrivileges();
+    }
+    
+    public void deleteUser(User user){
+        tokenRepository.deleteById(user.getId());
+        attemptsRepository.deleteByUsername(user.getUsername());
+        userRepository.delete(user);
     }
     public void createVerificationToken(User user, String token) {
         VerificationToken myToken = new VerificationToken(token, user);

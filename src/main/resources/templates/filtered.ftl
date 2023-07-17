@@ -1,43 +1,14 @@
+<#import "/spring.ftl" as spring/>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
           integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <script src="https://code.jquery.com/jquery-3.7.0.js"
             integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
     <title>Database Display</title>
-
-    <style>
-        body{
-            text-align: center;
-        }
-
-        h2 {
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        a {
-            color: black;
-            text-decoration: none;
-            margin-right: 20px;
-        }
-
-        #controls{
-            text-align:right;
-        }
-
-        .display{
-            margin-top:20px;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 800px;
-        }
-
-    </style>
 </head>
 
 <body>
@@ -52,19 +23,29 @@
             </form>
             <div>
                 <form id="display" class="display d-flex justify-content-between">
-                    <#--<input type="hidden" id="pageS" name="pageS" value="${pageS}">-->
                     <div>
-<#--<<input type="hidden" name="table_name" value="${table_name}">-->
+                        <#if add??>
+                        <button id="add" type="submit" formaction="/addStudent" class="btn actionC">
+                            <i class="bi bi-plus-square-fill iconS"></i>
+                        </button>
+                        </#if>
                         <#if count?? && count gt 0>
-                            <button id="edit" type="submit" formaction="editUser.jsp"
-                                    class="btn btn-primary btn-sm">Edit</button>
+                            <#if delete??>
+                            <button id="delete" type="submit" formaction="/deleteStudent" class="btn actionC">
+                                <i class="bi bi-dash-square-fill iconS"></i>
+                            </button>
+                            </#if>
+                            <#if edit??>
+                            <button id="edit" type="submit" formaction="/editStudent" class="btn btn-primary
+                            btn-sm">Edit</button>
+                            </#if>
                         </#if>
                     </div>
                     <div>
                         <#if values??>
                             Display
                             <#import "select.ftl" as selection/>
-                            <@selection.select id="ps" values= values selected="${pageS!3}"/>
+                            <@selection.select id="pageS" values= values selected="${pageS}"/>
                             rows per page
                             <button class="btn btn-outline-primary btn-sm"
                                     formaction="/display" type="submit">Go</button>
@@ -95,7 +76,7 @@
                     </#if>
                     </tbody>
                     </table>
-<#--
+
 <nav class="m-auto">
 <ul class="pagination justify-content-center">
 <#if currentPage == 1>
@@ -131,7 +112,7 @@
 </#if>
 </ul>
 </nav>
--->
+
 </div>
 </div>
 </div>

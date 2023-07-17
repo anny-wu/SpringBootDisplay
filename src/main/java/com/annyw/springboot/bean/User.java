@@ -8,7 +8,7 @@ import jakarta.validation.constraints.*;
 import java.util.Collection;
 
 @Entity
-@Table(name = "USER", schema = "Application")
+@Table(name = "user", schema = "Application")
 public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -41,7 +41,7 @@ public class User {
     
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
-        name = "USER_ROLE",
+        name = "user_role",
         joinColumns = @JoinColumn(name = "userID"),
         inverseJoinColumns = @JoinColumn(name = "roleID")
     )
@@ -69,10 +69,6 @@ public class User {
     
     public String getEmail() {
         return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
     }
     
     public String getUsername() {

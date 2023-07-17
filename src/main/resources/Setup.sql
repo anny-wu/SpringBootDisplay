@@ -1,5 +1,5 @@
 USE Application;
-CREATE TABLE USER(
+CREATE TABLE user(
          id bigint not null auto_increment,
          email varchar(50) not null,
          username varchar(24) not null,
@@ -10,38 +10,42 @@ CREATE TABLE USER(
          credentials_nonexpired boolean default 1 not null,
          PRIMARY KEY (id)
 );
-CREATE TABLE USER_ROLE(
+CREATE TABLE user_role(
        userID bigint not null,
-       roleID bigint not null
+       roleID bigint not null,
+       foreign key (userID) references user (id),
+       foreign key (roleID) references role (id)
 );
-CREATE TABLE ROLE(
+CREATE TABLE role(
        id bigint not null,
        name varchar(10) not null,
        PRIMARY KEY (id)
 );
-CREATE TABLE TOKENS(
-    id     bigint  not null,
+CREATE TABLE tokens(
+    id     bigint  not null auto_increment,
     tokens varchar(128) null,
     expired_date date null,
     constraint id
-        foreign key (id) references USER (id)
+        foreign key (id) references user (id)
 );
-CREATE TABLE ROLE_PRIVILEGE
+CREATE TABLE role_privilege
 (
     roleID      bigint not null,
-    privilegeID bigint not null
+    privilegeID bigint not null,
+
+    foreign key (privilegeID) references privilege (id),
+    foreign key (roleID) references role (id)
 );
-CREATE TABLE PRIVILEGE
+CREATE TABLE privilege
 (
     id   bigint not null auto_increment,
     name varchar(24) not null,
     PRIMARY KEY (id)
 );
-CREATE TABLE ATTEMPTS(
+CREATE TABLE attempts(
      username   varchar(24) not null,
      attempts int default 0 not null,
-     constraint attempts
-         foreign key (username) references USER (username)
+     locked_time date null
 );
 USE Application;
 CREATE TABLE student(
@@ -60,3 +64,4 @@ INSERT INTO student (username,age) VALUES ('Tom', 18);
 INSERT INTO student (username,age) VALUES ('Jessica', 36);
 INSERT INTO student (username,age) VALUES ('Jack', 20);
 INSERT INTO student (username,age) VALUES ('Catherine', 10);
+

@@ -14,7 +14,7 @@
 <body>
 <div class="cover-container d-flex h-100 flex-column align-items-center justify-content-center">
     <h1>Register</h1>
-        <form method="post" id="form">
+        <form method="post" id="accountForm">
             <div>
                 <label class="flabel"><strong>Email</strong></label>
                 <@spring.bind "user.email"/>
@@ -118,8 +118,8 @@
         //Check if the passwords match each other
         if ($("#password").val() == $("#confirm").val()) {
             console.log("same");
-            $("#form").attr("action", "/submit");
-            $("#form").submit();
+            $("#accountForm").attr("action", "/submit");
+            $("#accountForm").submit();
             return true;
         } else {
             console.log("Not same");

@@ -24,32 +24,26 @@ public class DataLoader implements
     boolean setup = false;
     
     @Autowired
-    private UserRepository userRepository;
-    
-    @Autowired
     private RoleRepository roleRepository;
     
     @Autowired
     private PrivilegeRepository privilegeRepository;
     
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         
-        if (setup) return;
         Privilege addPrivilege = createPrivilegeIfNotFound("ADD_PRIVILEGE");
         Privilege deletePrivilege = createPrivilegeIfNotFound("DELETE_PRIVILEGE");
         Privilege editPrivilege = createPrivilegeIfNotFound("EDIT_PRIVILEGE");
+        List<Privilege> privilegesU = new ArrayList<>();
+        privilegesU.add(editPrivilege);
+        createRoleIfNotFound("ROLE_USER", privilegesU);
         List<Privilege> privileges = new ArrayList<>();
         privileges.add(editPrivilege);
-        createRoleIfNotFound("ROLE_USER", privileges);
         privileges.add(addPrivilege);
         privileges.add(deletePrivilege);
         createRoleIfNotFound("ROLE_ADMIN", privileges);
-        
         
         setup = true;
     }
@@ -74,6 +68,9 @@ public class DataLoader implements
             role.setPrivileges(privileges);
             roleRepository.save(role);
         }
+            System.out.println(privileges);
+            role.setPrivileges(privileges);
+            roleRepository.save(role);
         return role;
     }
 }

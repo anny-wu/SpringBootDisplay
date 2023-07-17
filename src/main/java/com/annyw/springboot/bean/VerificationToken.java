@@ -36,15 +36,6 @@ public class VerificationToken {
         setExpiredDate();
     }
     
-    private Date calculateExpiredDate(int expiryTimeInMinutes) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Timestamp(cal.getTime().getTime()));
-            cal.add(Calendar.MINUTE, expiryTimeInMinutes);
-            return new Date(cal.getTime().getTime());
-    }
-    
-    public User getUser() {return user;}
-    
     public String getToken() {
         return token;
     }
@@ -57,6 +48,13 @@ public class VerificationToken {
     
     public void setExpiredDate(){
         this.expiredDate = calculateExpiredDate(EXPIRATION);
+    }
+    
+    private Date calculateExpiredDate(int expiryTimeInMinutes) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Timestamp(cal.getTime().getTime()));
+        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        return new Date(cal.getTime().getTime());
     }
 }
 

@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 @Repository
 public interface AttemptsRepository extends JpaRepository<Attempts, Object> {
-    Attempts findByUsername(String username);
+    Attempts findAttemptsByUsername(String username);
+    void deleteByUsername(String username);
 }

@@ -1,49 +1,37 @@
 package com.annyw.springboot.security;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-
-import javax.sql.DataSource;
-
-import static jakarta.servlet.DispatcherType.ERROR;
-import static jakarta.servlet.DispatcherType.FORWARD;
 
 @Configuration
 @ComponentScan
 @EnableWebSecurity
+@Slf4j
 public class WebSecurityConfiguration{
     
     @Autowired
     private UserDetailsService userDetailsService;
+    
     @Autowired
-    AuthenticationSuccessHandler authenticationSuccessHandler;
+    private CustomLoginFailureHandler loginFailureHandler;
+    @Autowired
+    private CustomLoginSuccessHandler loginSuccessHandler;
     
    @Bean
     public PasswordEncoder encoder() {
@@ -112,10 +100,16 @@ public class WebSecurityConfiguration{
             .formLogin(form->form
                 .loginPage(LOGIN_URL)
                 .loginProcessingUrl(LOGIN_URL)
-                .failureUrl(LOGIN_FAIL_URL)
                 .usernameParameter(USERNAME)
                 .passwordParameter(PASSWORD)
-                .defaultSuccessUrl(DEFAULT_SUCCESS_URL))
+                .failureHandler(loginFailureHandler)
+                .successHandler(loginSuccessHandler))
+                .logout(logout -> logout
+                .logoutUrl(LOGOUT_URL)
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .clearAuthentication(true)
+                .logoutSuccessUrl(LOGIN_URL + "?logout"))
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .invalidSessionUrl("/")

@@ -1,6 +1,8 @@
 spring:
   application:
     name: display
+  main:
+    allow-circular-references: true
   freemarker:
     suffix: .ftl
     charset: UTF-8
@@ -12,10 +14,6 @@ spring:
     favicon:
       enabled:true
     static-path-pattern: /static/**
-  security:
-    user:
-      name: admin
-      password: admin
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/Application?useSSl=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,8 +22,8 @@ spring:
   mail:
     host: smtp.qq.com
     port: 465
-    username: xxxxxx
-    password: xxxxxx
+    username: xxxxx
+    password: xxxxx
     protocol: smtps
     properties:
       mail:
