@@ -17,7 +17,8 @@
 <div class="row">
     <div class="col-8 m-auto back">
         <form>
-            <input id="deleted" type="hidden" name="id" value="1">
+            <input type="hidden" name="admin" value="1">
+            <input id="deleted" type="hidden" name="id" value=${deleted}>
             <div class="form-group row">
                 <label class="flabel col-2 col-form-label"><strong>TABLE NAME</strong></label>
                 <div class="col-4">

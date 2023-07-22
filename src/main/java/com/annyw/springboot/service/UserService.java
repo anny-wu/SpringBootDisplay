@@ -27,7 +27,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
   
     
-    public User register(User user){
+    public void register(User user){
         Collection<Role> roles = new ArrayList<>();
         
         if(user.getPrivilege().equals("admin")){
@@ -45,7 +45,6 @@ public class UserService {
         
         Attempts attempt = new Attempts(username);
         attemptsRepository.save(attempt);
-        return user;
     }
     
     public User getUserByUsername(String username){
@@ -58,33 +57,11 @@ public class UserService {
     }
     
     public List<Privilege> getUserPrivilege(String role) {
-       System.out.println(roleRepository.findByName(role));
-       return (List<Privilege>) roleRepository.findByName(role).getPrivileges();
-    }
-    
-    public void deleteUser(User user){
-        tokenRepository.deleteById(user.getId());
-        attemptsRepository.deleteByUsername(user.getUsername());
-        userRepository.delete(user);
-    }
-    public void createVerificationToken(User user, String token) {
-        VerificationToken myToken = new VerificationToken(token, user);
-        tokenRepository.save(myToken);
-    }
-    
-    public VerificationToken getVerificationToken(String token) {
-        return tokenRepository.findByToken(token);
+        return (List<Privilege>) roleRepository.findByName(role).getPrivileges();
     }
     
     public void saveRegisteredUser(User user) {
         userRepository.save(user);
     }
     
-    public User generateNewVerificationToken(String existingToken) {
-        VerificationToken token = tokenRepository.findByToken(existingToken);
-        token.setToken(UUID.randomUUID().toString());
-        token.setExpiredDate();
-        tokenRepository.save(token);
-        return token.getUser();
-    }
 }

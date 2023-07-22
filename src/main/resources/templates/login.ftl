@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="cover-container d-flex h-100 p-3 flex-column align-items-center justify-content-center">
-    <h1>Welcome to Database Users</h1>
+    <h1>Welcome to Database Students</h1>
     <#if username??>
         Log in as : ${username}
         <#if errorMessage??>
@@ -32,7 +32,7 @@
         <#if error??>
             <span class="error text-center">${errorMessage}</span>
         </#if>
-        <form method="post" id="#accountForm" >
+        <form method="post" id="#accountForm">
             <div>
                 <label class="flabel"><strong>Username</strong></label>
                 <input type="text" class="form-control" name="username"

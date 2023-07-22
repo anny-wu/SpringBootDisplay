@@ -31,7 +31,7 @@
             </div>
         </form>
     <#else>
-        <form>
+        <form method="post">
             <div class="row">
                 <button class="flabel btn btn-info" type="submit" formaction="/register">Sign Up</button>
             </div>

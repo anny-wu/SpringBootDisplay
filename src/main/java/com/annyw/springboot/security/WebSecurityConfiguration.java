@@ -22,7 +22,6 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 @Configuration
 @ComponentScan
 @EnableWebSecurity
-@Slf4j
 public class WebSecurityConfiguration{
     
     @Autowired

@@ -33,6 +33,7 @@ public class DataLoader implements
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         
+        if (setup){return;}
         Privilege addPrivilege = createPrivilegeIfNotFound("ADD_PRIVILEGE");
         Privilege deletePrivilege = createPrivilegeIfNotFound("DELETE_PRIVILEGE");
         Privilege editPrivilege = createPrivilegeIfNotFound("EDIT_PRIVILEGE");
@@ -68,9 +69,6 @@ public class DataLoader implements
             role.setPrivileges(privileges);
             roleRepository.save(role);
         }
-            System.out.println(privileges);
-            role.setPrivileges(privileges);
-            roleRepository.save(role);
         return role;
     }
 }

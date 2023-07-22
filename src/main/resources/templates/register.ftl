@@ -14,7 +14,7 @@
 <body>
 <div class="cover-container d-flex h-100 flex-column align-items-center justify-content-center">
     <h1>Register</h1>
-        <form method="post" id="accountForm">
+        <form id="accountForm">
             <div>
                 <label class="flabel"><strong>Email</strong></label>
                 <@spring.bind "user.email"/>
@@ -88,11 +88,12 @@
                        placeholder="admin code" id="privilege">
             </div>
         <div class="row d-flex justify-content-center">
-            <button class="controls flabel btn btn-info" type="submit" id="signup" formaction="/register">Sign
+            <button class="controls flabel btn btn-info" type="submit" id="signup" formmethod="post"
+                    formaction="/register">Sign
                 up</button>
         </div>
         <div class="row d-flex justify-content-center">
-            <button class="controls flabel btn btn-info" type="submit" formaction="/">Back</button>
+            <button class="controls flabel btn btn-info" type="submit" formmethod="get" formaction="/">Back</button>
         </div>
         </form>
 </div>

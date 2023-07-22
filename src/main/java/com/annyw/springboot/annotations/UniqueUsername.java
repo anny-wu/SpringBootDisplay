@@ -13,13 +13,15 @@ import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({ElementType.FIELD, TYPE,ANNOTATION_TYPE})
+@Target({ElementType.FIELD, TYPE, ANNOTATION_TYPE})
 @Retention(RUNTIME)
 @Constraint(validatedBy = UsernameValidator.class)
 @Documented
 public @interface UniqueUsername {
     
     String message() default "Username already exist";
+    
     Class<?>[] groups() default {};
+    
     Class<? extends Payload>[] payload() default {};
 }

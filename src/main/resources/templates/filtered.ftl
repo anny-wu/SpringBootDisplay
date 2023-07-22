@@ -18,7 +18,7 @@
 <div class="row">
     <div class="col-8 m-auto">
         <div id="controls">
-            <form method="post" class="display" action="/logout">
+            <form method="get" class="display" action="/logout">
                 <button class="btn btn-secondary" type="submit" value="Logout">Log Out</button>
             </form>
             <div>
@@ -36,7 +36,7 @@
                             </button>
                             </#if>
                             <#if edit??>
-                            <button id="edit" type="submit" formaction="/editStudent" class="btn btn-primary
+                                <button id="edit" type="submit" formaction="/editStudent" class="btn btn-primary
                             btn-sm">Edit</button>
                             </#if>
                         </#if>
@@ -47,8 +47,11 @@
                             <#import "select.ftl" as selection/>
                             <@selection.select id="pageS" values= values selected="${pageS}"/>
                             rows per page
-                            <button class="btn btn-outline-primary btn-sm"
-                                    formaction="/display" type="submit">Go</button>
+                            <#if admin>
+                                <input type="hidden" name="admin" value="1">
+                            </#if>
+                                <button class="btn btn-outline-primary btn-sm"
+                                        formaction="/display" type="submit">Go</button>
                         </#if>
                     </div>
                     </form>
@@ -76,7 +79,7 @@
                     </#if>
                     </tbody>
                     </table>
-
+<#if admin>
 <nav class="m-auto">
 <ul class="pagination justify-content-center">
 <#if currentPage == 1>
@@ -85,7 +88,7 @@
 </li>
 <#else>
 <li class="page-item">
-<a class="page-link" href="display?currentPage=${currentPage-1}&pageS
+<a class="page-link" href="display?admin&currentPage=${currentPage-1}&pageS
 =${pageS}" aria-disabled="true"><span aria-hidden="true">&laquo;</span></a>
 </li>
 </#if>
@@ -97,7 +100,7 @@
     <li class="page-item">
 </#if>
 <a class="page-link"
-   href="display?currentPage=${i}&pageS=${pageS}">${i}</a></li>
+   href="display?admin&currentPage=${i}&pageS=${pageS}">${i}</a></li>
 </#list>
 
 <#if currentPage == totalCount>
@@ -106,12 +109,49 @@
 </li>
 <#else>
 <li class="page-item">
-<a class="page-link" href="display?currentPage=${currentPage+1}&pageS=${pageS}">
+<a class="page-link" href="display?admin&currentPage=${currentPage+1}&pageS=${pageS}">
     &raquo;</a>
 </li>
 </#if>
 </ul>
 </nav>
+    <#else>
+        <nav class="m-auto">
+            <ul class="pagination justify-content-center">
+                <#if currentPage == 1>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                <#else>
+                    <li class="page-item">
+                        <a class="page-link" href="display?currentPage=${currentPage-1}&pageS
+=${pageS}" aria-disabled="true"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                </#if>
+
+                <#list 1..totalCount as i>
+                    <#if currentPage == i>
+                        <li class="page-item active" aria-current="page">
+                    <#else>
+                        <li class="page-item">
+                    </#if>
+                    <a class="page-link"
+                       href="display?currentPage=${i}&pageS=${pageS}">${i}</a></li>
+                </#list>
+
+                <#if currentPage == totalCount>
+                    <li class="page-item">
+                        <a class="page-link disabled" href="#">&raquo;</a>
+                    </li>
+                <#else>
+                    <li class="page-item">
+                        <a class="page-link" href="display?currentPage=${currentPage+1}&pageS=${pageS}">
+                            &raquo;</a>
+                    </li>
+                </#if>
+            </ul>
+        </nav>
+</#if>
 
 </div>
 </div>

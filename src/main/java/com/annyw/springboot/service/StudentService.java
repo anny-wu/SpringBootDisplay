@@ -13,7 +13,6 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -21,23 +20,41 @@ public class StudentService {
     @Autowired
     StudentRepository studentRepository;
     
-    public boolean studentExists(String username){
-        return studentRepository.findByUsername(username) != null;
+    //Convert the username to the proper format
+    public String convertUsername(String username){
+        return username.substring(0, 1).toUpperCase() + username.substring(1).toLowerCase();
+    }
+    //Check if the student with the given username exists
+    public Student studentExists(String username){
+        return studentRepository.findByUsername(username);
     }
     //Get the total number of students
     public long getCount(){
         return studentRepository.count();
     }
     
-    //Get field names from Student class as a list
-    public List<String> getFieldName(String className)
+    //Get field names in uppercase from Student class as a list
+    public List<String> getUpperFieldNames(String className)
         throws ClassNotFoundException {
         List<String> fieldName = new ArrayList<>();
         Class<?> cls;
-        cls = Class.forName("com.annyw.springboot.bean.Student");
+        cls = Class.forName(className);
         Field[] fields = cls.getDeclaredFields();
         for (Field field : fields) {
             fieldName.add(field.getName().toUpperCase());
+        }
+        return fieldName;
+    }
+    
+    //Get field names in uppercase from Student class as a list
+    public List<String> getlowerFieldNames(String className)
+        throws ClassNotFoundException {
+        List<String> fieldName = new ArrayList<>();
+        Class<?> cls;
+        cls = Class.forName(className);
+        Field[] fields = cls.getDeclaredFields();
+        for (Field field : fields) {
+            fieldName.add(field.getName());
         }
         return fieldName;
     }
@@ -72,6 +89,8 @@ public class StudentService {
         return result;
     }
     
+    
+    //Get students that needs to be display on current page with given page size
     public Page<Student> getStudentListByPage(int currentPage, int pageSize){
         Pageable paging = PageRequest.of(currentPage,pageSize);
         Page<Student> pageResult = studentRepository.findAll(paging);

@@ -47,7 +47,9 @@
 <div class="row">
     <div class="col-8 m-auto back">
         <form>
-            <input type="hidden" id="selected" name="id" value="1">
+            <#if admin>
+                <input type="hidden" name="admin" value="1">
+            </#if>
             <div class="form-group row">
                 <label class="flabel col-2 col-form-label"><strong>TABLE NAME</strong></label>
                 <div class="col-4">
@@ -60,7 +62,7 @@
                     <div class="col-6">
                         <div class="form-outline">
                             <#if students??>
-                                <select id="selectS" class="form-select">
+                                <select id="selectS" class="form-select" name="id">
                                     <@spring.bind "student.id"/>
                                     <#if errorMsg??>
                                         <#list students as s>
@@ -98,10 +100,10 @@
                 </#if>
                 <div id="buttons">
                     <div>
-                        <button id="edit" type="submit" class="btn btn-lg btn-primary controlB disabled"
-                                formmethod="post" formaction="/editStudent">Edit</button>
-                        <button type="submit" class="btn btn-lg btn-primary controlB"
-                                formmethod="get" formaction="/display">Back</button>
+                            <button id="edit" type="submit" class="btn btn-lg btn-primary controlB disabled"
+                                    formmethod="post" formaction="/editStudent">Edit</button>
+                            <button type="submit" class="btn btn-lg btn-primary controlB"
+                                    formmethod="get" formaction="/display">Back</button>
                     </div>
                 </div>
         </form>
@@ -110,10 +112,6 @@
 </body>
 <script>
     $(document).ready(function() {
-        //Record the selected user id for edit
-        $('#selectS').change(function () {
-            $("#selected").attr("value", $("#selectS").val());
-        });
         //Change edit enable status when input is empty
         $('.edit').on('input',function() {
             var empty = false;

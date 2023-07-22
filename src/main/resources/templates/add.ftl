@@ -17,6 +17,7 @@
 <div class="row">
     <div class="col-8 m-auto back">
         <form>
+            <input type="hidden" name="admin" value="1">
             <div class="form-group row">
                 <label class="flabel col-2 col-form-label"><strong>TABLE NAME</strong></label>
                 <div class="col-4">

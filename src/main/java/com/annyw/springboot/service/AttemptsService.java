@@ -16,7 +16,7 @@ public class AttemptsService {
     
     public static final int MAX_FAILED_ATTEMPTS = 3;
     
-    private static final long LOCK_TIME_DURATION = 60 * 1000; // 24 hours 24 * 60 * 60 * 1000
+    private static final long LOCK_TIME_DURATION = 24 * 60 * 60 * 1000; // 24 hours 24 * 60 * 60 * 1000
     
     @Autowired
     private UserRepository userRepository;

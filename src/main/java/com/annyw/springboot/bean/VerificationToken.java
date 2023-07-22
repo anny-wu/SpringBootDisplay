@@ -36,6 +36,8 @@ public class VerificationToken {
         setExpiredDate();
     }
     
+    public User getUser() {return user;}
+    
     public String getToken() {
         return token;
     }

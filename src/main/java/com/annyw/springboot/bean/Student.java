@@ -7,6 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "student", schema = "Application")
+//TODO:Add first and last name to student class
 public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
