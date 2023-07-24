@@ -3,18 +3,15 @@ package com.annyw.springboot.event;
 import com.annyw.springboot.bean.User;
 import org.springframework.context.ApplicationEvent;
 
-import java.util.Locale;
-
+//Event fires when the system attempts to resend the verification token through email
 public class OnResendTokenEvent extends ApplicationEvent {
     private String appUrl;
-    private Locale locale;
     private User user;
     
-    public OnResendTokenEvent(User user, Locale locale, String appUrl) {
+    public OnResendTokenEvent(User user, String appUrl) {
         super(user);
         
         this.user = user;
-        this.locale = locale;
         this.appUrl = appUrl;
     }
     
@@ -24,14 +21,6 @@ public class OnResendTokenEvent extends ApplicationEvent {
     
     public void setAppUrl(String appUrl) {
         this.appUrl = appUrl;
-    }
-    
-    public Locale getLocale() {
-        return locale;
-    }
-    
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
     
     public User getUser() {

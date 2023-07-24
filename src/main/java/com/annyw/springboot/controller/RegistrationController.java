@@ -38,14 +38,14 @@ public class RegistrationController {
         return "badEmail";
     }
     
-    //User goes to the sign up page
+    //User goes to the sign-up page
     @GetMapping("/register")
     public String registerGet(Model model) {
         model.addAttribute("user", new User());
         return "register";
     }
     
-    //User arrives at the sign up page
+    //User arrives at the sign-up page
     @PostMapping("/startRegister")
     public String registerPost(Model model) {
         model.addAttribute("user", new User());
@@ -62,8 +62,7 @@ public class RegistrationController {
                 model.addAttribute("noErrors", true);
                 //Send an email with the verification token to enable the user account
                 String appUrl = request.getContextPath();
-                eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user,
-                    request.getLocale(), appUrl));
+                eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user,appUrl));
                 //Register the user
                 userService.register(user);
                 //Redirect the user to the home page
@@ -80,7 +79,7 @@ public class RegistrationController {
             return "redirect:/emailErrors";
         }
         /*
-          If the form fields do not successfully bind to a user, returns the user to the sign up page
+          If the form fields do not successfully bind to a user, returns the user to the sign-up page
           with fields that were successful
         */
         model.addAttribute("user", user);
@@ -123,7 +122,7 @@ public class RegistrationController {
             User user = tokenService.generateNewVerificationToken(token);
             //Resend the email
             String appUrl = request.getContextPath();
-            eventPublisher.publishEvent(new OnResendTokenEvent(user, request.getLocale(), appUrl));
+            eventPublisher.publishEvent(new OnResendTokenEvent(user, appUrl));
             return "redirect:/home";
         }
         catch (RuntimeException e) {

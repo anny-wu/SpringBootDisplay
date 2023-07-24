@@ -3,7 +3,6 @@ package com.annyw.springboot.bean;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 @Table(name = "student", schema = "Application")
